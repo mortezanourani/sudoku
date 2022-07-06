@@ -31,4 +31,65 @@ public class Sudoku {
         }
         return false;
     }
+    
+    private boolean isFilled(int[][] board) {
+        for (int r = 0; r <= 8; r++) {
+            for (int c = 0; c <= 8; c++) {
+                if (board[r][c] == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean isWinner(int[][] board) {
+        int value;
+        boolean isDuplicated;
+        for (int r = 0; r <= 8; r++) {
+            for (int c = 0; c <= 8; c++) {
+                value = board[r][c];
+                board[r][c] = 0;
+                isDuplicated = isInRow(board, r, value) || isInColumn(board, c, value) || isInGroup(board, r, c, value);
+                if (isDuplicated) {
+                    return false;
+                }
+                board[r][c] = value;
+            }
+        }
+        return true;
+    }
+
+    private boolean hasSolution(int[][] board) {
+        if (isFilled(board)) {
+            if (isWinner(board)) {
+                return true;
+            }
+            return false;
+        }
+
+        boolean isDuplicated;
+        for (int r = 0; r <= 8; r++) {
+            for (int c = 0; c <= 8; c++) {
+                if (board[r][c] != 0) {
+                    continue;
+                } else {
+                    for (int v = 1; v <= 9; v++) {
+                        isDuplicated = isInRow(board, r, v) || isInColumn(board, c, v) || isInGroup(board, r, c, v);
+                        if (isDuplicated) {
+                            continue;
+                        } else {
+                            board[r][c] = v;
+                            if (hasSolution(board)) {
+                                return true;
+                            } else {
+                                board[r][c] = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
