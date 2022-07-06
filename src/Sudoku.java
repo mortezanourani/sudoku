@@ -22,7 +22,7 @@ public class Sudoku {
     private boolean isInGroup(int row, int column, int value) {
         int groupRow = (row / 3) * 3;
         int groupColumn = (column / 3) * 3;
-        for (int r = groupColumn; r <= groupColumn + 3; r++) {
+        for (int r = groupRow; r <= groupRow + 3; r++) {
             for (int c = groupColumn; c <= groupColumn + 3; c++) {
                 if (Board[r][c] == value) {
                     return true;
