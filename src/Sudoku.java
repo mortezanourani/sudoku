@@ -63,7 +63,7 @@ public class Sudoku {
         return true;
     }
 
-    private boolean hasSolution() {
+    private boolean Solve() {
         if (isFilled()) {
             if (isWinner()) {
                 return true;
@@ -87,7 +87,7 @@ public class Sudoku {
                         isDuplicated = isInRow(r, v) || isInColumn(c, v) || isInGroup(r, c, v);
                         if (!isDuplicated) {
                             Board[r][c] = v;
-                            if (hasSolution()) {
+                            if (Solve()) {
                                 return true;
                             } else {
                                 Board[r][c] = 0;
@@ -101,5 +101,21 @@ public class Sudoku {
             }
         }
         return false;
+    }
+
+    public void New() {
+        Random rand = new Random();
+        Board[0][0] = rand.nextInt(10);
+        Solve();
+
+        int row = 0;
+        int column = 0;
+        for (int d = 0; d < 20; d++) {
+            do{
+                row = rand.nextInt(9);
+                column = rand.nextInt(9);
+            } while (Board[row][column] == 0);
+            Board[row][column] = 0;
+        }
     }
 }
