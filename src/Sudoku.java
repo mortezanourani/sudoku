@@ -105,6 +105,8 @@ public class Sudoku {
 
     public void New() {
         Random rand = new Random();
+        
+        Board = new int[9][9];
         Board[0][0] = rand.nextInt(10);
         Solve();
 

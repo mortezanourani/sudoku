@@ -1,5 +1,3 @@
-package Windows;
-
 import java.awt.event.*;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -48,13 +46,16 @@ public class LoginWindow extends JFrame {
             String errorMessage = "Please enter your name.";
             if (nameValue.equals("")) {
                 JOptionPane.showMessageDialog(rootPane, errorMessage);
+            } else {
+                new GameWindow();
+                dispose();
             }
         }
     }
     
     private class CloseActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            System.exit(0);
+            System.exit(NORMAL);
         }
     }
 }
