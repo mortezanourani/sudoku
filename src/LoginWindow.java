@@ -19,6 +19,7 @@ public class LoginWindow extends JFrame {
         nameLabel.setBounds(10, 10, 260, 30);
         nameText = new JTextField(25);
         nameText.setBounds(10, 40, 260, 30);
+        nameText.addActionListener(new OpenActionListener());
         startButton = new JButton("Play");
         startButton.setBounds(145, 80, 125, 30);
         startButton.addActionListener(new OpenActionListener());
@@ -46,6 +47,7 @@ public class LoginWindow extends JFrame {
             String errorMessage = "Please enter your name.";
             if (nameValue.equals("")) {
                 JOptionPane.showMessageDialog(rootPane, errorMessage);
+                System.out.println("Error: Name field is empty.");
             } else {
                 new GameWindow();
                 dispose();

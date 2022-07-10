@@ -2,3 +2,8 @@
 # Directories #
 ###############
 .vscode/
+
+###############
+# Class files #
+###############
+*.class
