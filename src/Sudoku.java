@@ -3,6 +3,7 @@ import java.util.Random;
 
 public class Sudoku {
     public int[][] Board = new int[9][9];
+    public int[][] Puzzle = new int[9][9];
 
     private boolean isInRow(int row, int value) {
         for (int c = 0; c <= 8; c++) {
@@ -105,7 +106,7 @@ public class Sudoku {
 
     public void New() {
         Random rand = new Random();
-        
+
         Board = new int[9][9];
         Board[0][0] = rand.nextInt(10);
         Solve();
@@ -113,11 +114,36 @@ public class Sudoku {
         int row = 0;
         int column = 0;
         for (int d = 0; d < 20; d++) {
-            do{
+            do {
                 row = rand.nextInt(9);
                 column = rand.nextInt(9);
             } while (Board[row][column] == 0);
             Board[row][column] = 0;
         }
+
+        for (row = 0; row <= 8; row++) {
+            for (column = 0; column <= 8; column++) {
+                Puzzle[row][column] = Board[row][column];
+            }
+        }
+    }
+    
+    public void Restart() {
+        for (int row = 0; row <= 8; row++) {
+            for (int column = 0; column <= 8; column++) {
+                Board[row][column] = Puzzle[row][column];
+            }
+        }
+        return;
+    }
+
+    public void Move(int cellRow, int cellColumn, int choice) {
+        Board[cellRow][cellColumn] = choice;
+        if (isFilled()) {
+            if (isWinner()) {
+                System.out.println("You Win!");
+            }
+        }
+        return;
     }
 }
