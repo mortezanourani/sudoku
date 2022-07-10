@@ -4,6 +4,31 @@ import java.util.Random;
 public class Sudoku {
     public int[][] Board = new int[9][9];
     public int[][] Puzzle = new int[9][9];
+    public Status GameStatus;
+
+    public enum Difficulty {
+        Easy(20),
+        Medium(35),
+        Hard(50);
+
+        public int value;
+
+        private Difficulty(int value) {
+            this.value = value;
+        }
+    }
+
+    public enum Status {
+        Play(0),
+        Win(1),
+        Fail(2);
+
+        public int value;
+
+        private Status(int value) {
+            this.value = value;
+        }
+    }
 
     private boolean isInRow(int row, int value) {
         for (int c = 0; c <= 8; c++) {
@@ -104,7 +129,7 @@ public class Sudoku {
         return false;
     }
 
-    public void New() {
+    public void New(Difficulty difficulty) {
         Random rand = new Random();
 
         Board = new int[9][9];
@@ -113,7 +138,7 @@ public class Sudoku {
 
         int row = 0;
         int column = 0;
-        for (int d = 0; d < 20; d++) {
+        for (int d = 0; d < difficulty.value; d++) {
             do {
                 row = rand.nextInt(9);
                 column = rand.nextInt(9);
@@ -141,7 +166,8 @@ public class Sudoku {
         Board[cellRow][cellColumn] = choice;
         if (isFilled()) {
             if (isWinner()) {
-                System.out.println("You Win!");
+                System.out.println("You won!");
+                GameStatus = Status.Win;
             }
         }
         return;

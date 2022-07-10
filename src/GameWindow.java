@@ -10,13 +10,17 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class GameWindow extends JFrame {
     private JMenuBar menuBar;
     private JMenu appMenu;
     private JMenuItem restartGameMenuItem;
-    private JMenuItem newGameMenuItem;
+    private JMenu newGameMenu;
+    private JMenuItem newGameEasyMenuItem;
+    private JMenuItem newGameMediumMenuItem;
+    private JMenuItem newGameHardMenuItem;
     private JMenuItem scoreTableMenuItem;
     private JMenuItem exitGameMenuItem;
 
@@ -35,8 +39,18 @@ public class GameWindow extends JFrame {
 
         restartGameMenuItem = new JMenuItem("Restart");
         restartGameMenuItem.addActionListener(new RestartGameActionListener());
-        newGameMenuItem = new JMenuItem("New game");
-        newGameMenuItem.addActionListener(new NewGameActionListener());
+
+        newGameEasyMenuItem = new JMenuItem("Easy");
+        newGameEasyMenuItem.addActionListener(new NewGameActionListener());
+        newGameMediumMenuItem = new JMenuItem("Medium");
+        newGameMediumMenuItem.addActionListener(new NewGameActionListener());
+        newGameHardMenuItem = new JMenuItem("Hard");
+        newGameHardMenuItem.addActionListener(new NewGameActionListener());
+        newGameMenu = new JMenu("New game");
+        newGameMenu.add(newGameEasyMenuItem);
+        newGameMenu.add(newGameMediumMenuItem);
+        newGameMenu.add(newGameHardMenuItem);
+        
         scoreTableMenuItem = new JMenuItem("Score table");
         scoreTableMenuItem.addActionListener(new ScoreTableActionListener());
         exitGameMenuItem = new JMenuItem("Exit");
@@ -44,7 +58,7 @@ public class GameWindow extends JFrame {
 
         appMenu = new JMenu("Menu");
         appMenu.add(restartGameMenuItem);
-        appMenu.add(newGameMenuItem);
+        appMenu.add(newGameMenu);
         appMenu.add(scoreTableMenuItem);
         appMenu.add(exitGameMenuItem);
 
@@ -161,6 +175,10 @@ public class GameWindow extends JFrame {
             int selectedCellColumn = selectedCell % 9;
             game.Move(selectedCellRow, selectedCellColumn, choice);
             gameTablePanel.DrawTablePanel();
+            if (game.GameStatus == Sudoku.Status.Win) {
+                JOptionPane.showMessageDialog(rootPane, "You won!");
+                timerPanel.Stop();
+            }
         }
     }
 
@@ -174,12 +192,17 @@ public class GameWindow extends JFrame {
     
     private class NewGameActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            game.New();
+            if (e.getActionCommand() == "Easy") {
+                game.New(Sudoku.Difficulty.Easy);
+            } else if (e.getActionCommand() == "Medium") {
+                game.New(Sudoku.Difficulty.Medium);
+            } else {
+                game.New(Sudoku.Difficulty.Hard);
+
+            }
             timerPanel.Reset();
             gameTablePanel.DrawTablePanel();
             add(gameTablePanel, BorderLayout.CENTER);
-
-            System.out.println("New game started.");
         }
     }
     
