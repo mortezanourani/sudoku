@@ -5,6 +5,7 @@ public class Sudoku {
     public int[][] Board = new int[9][9];
     public int[][] Puzzle = new int[9][9];
     public Status GameStatus;
+    public boolean OneWrong = false;
 
     public enum Difficulty {
         Easy(20),
@@ -163,13 +164,31 @@ public class Sudoku {
     }
 
     public void Move(int cellRow, int cellColumn, int choice) {
+        GameStatus = Status.Play;
+        if (OneWrong) {
+            boolean isDuplicated = isInRow(cellRow, choice)
+                    || isInColumn(cellColumn, choice)
+                    || isInGroup(cellRow, cellColumn, choice);
+            if (isDuplicated) {
+                System.out.println("You lost, Try harder!");
+                GameStatus = Status.Fail;
+            }
+        }
         Board[cellRow][cellColumn] = choice;
         if (isFilled()) {
             if (isWinner()) {
                 System.out.println("You won!");
                 GameStatus = Status.Win;
+            } else {
+                System.out.println("You lost, Try harder!");
+                GameStatus = Status.Fail;
             }
         }
+        return;
+    }
+
+    public void SpeedSolve() {
+        Solve();
         return;
     }
 }

@@ -1,9 +1,11 @@
 import java.awt.event.*;
+import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,6 +14,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 
 public class GameWindow extends JFrame {
     private JMenuBar menuBar;
@@ -21,6 +24,7 @@ public class GameWindow extends JFrame {
     private JMenuItem newGameEasyMenuItem;
     private JMenuItem newGameMediumMenuItem;
     private JMenuItem newGameHardMenuItem;
+    private JMenuItem oneWrongMenuItem;
     private JMenuItem scoreTableMenuItem;
     private JMenuItem exitGameMenuItem;
 
@@ -33,6 +37,7 @@ public class GameWindow extends JFrame {
     private JButton timerPause;
     private JLabel timerDisplay;
     ChoicePanel choicePanel;
+    private JButton speedSolve;
 
     public GameWindow() {
         super("Sudoku Game");
@@ -50,7 +55,10 @@ public class GameWindow extends JFrame {
         newGameMenu.add(newGameEasyMenuItem);
         newGameMenu.add(newGameMediumMenuItem);
         newGameMenu.add(newGameHardMenuItem);
-        
+
+        oneWrongMenuItem = new JMenuItem("First wrong, last one");
+        oneWrongMenuItem.addActionListener(new OneWrongActionListener());
+
         scoreTableMenuItem = new JMenuItem("Score table");
         scoreTableMenuItem.addActionListener(new ScoreTableActionListener());
         exitGameMenuItem = new JMenuItem("Exit");
@@ -59,6 +67,7 @@ public class GameWindow extends JFrame {
         appMenu = new JMenu("Menu");
         appMenu.add(restartGameMenuItem);
         appMenu.add(newGameMenu);
+        appMenu.add(oneWrongMenuItem);
         appMenu.add(scoreTableMenuItem);
         appMenu.add(exitGameMenuItem);
 
@@ -71,23 +80,33 @@ public class GameWindow extends JFrame {
         getContentPane().add(gameTablePanel, BorderLayout.CENTER);
         
         timerPause = new JButton("Pause");
-        timerPause.setBounds(10, 10, 160, 30);
         timerPause.addActionListener(new PauseActionListener());
         timerDisplay = new JLabel("00:00");
-        timerDisplay.setBounds(10, 10, 160, 30);
+        speedSolve = new JButton("Solve");
+        speedSolve.addActionListener(new SpeedSolveActionListener());
         timerPanel = new TimerPanel();
+        timerPanel.setMaximumSize(new Dimension(240, 80));
         timerPanel.setBorder(BorderFactory.createTitledBorder("Timer"));
         timerPanel.add(timerDisplay);
         timerPanel.add(timerPause);
+        timerPanel.add(speedSolve);
+
+        JSeparator separator = new JSeparator();
+        separator.setMaximumSize(new Dimension(200, 350));
 
         choicePanel = new ChoicePanel();
+        choicePanel.setMinimumSize(new Dimension(200,220));
+        choicePanel.setMaximumSize(new Dimension(200,240));
+        choicePanel.setBorder(BorderFactory.createTitledBorder("Choose answer"));
 
         gameOptions = new JPanel();
         gameOptions.add(timerPanel, BorderLayout.NORTH);
-        gameOptions.add(choicePanel, BorderLayout.CENTER);
+        gameOptions.add(separator);
+        gameOptions.add(choicePanel, new BoxLayout(choicePanel, BoxLayout.PAGE_AXIS));
+        gameOptions.setLayout(new BoxLayout(gameOptions, BoxLayout.Y_AXIS));
         getContentPane().add(gameOptions, BorderLayout.EAST);
 
-        setSize(650, 450);
+        setSize(600, 450);
         setLocation(400, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -154,6 +173,13 @@ public class GameWindow extends JFrame {
         }
     }
 
+    private class SpeedSolveActionListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            game.SpeedSolve();
+            gameTablePanel.DrawTablePanel();
+        }
+    }
+    
     private class ChoicePanel extends JPanel {
         public ChoicePanel() {
             super();
@@ -170,6 +196,9 @@ public class GameWindow extends JFrame {
 
     private class ChoiceActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            if (selectedCell < 0) {
+                return;
+            }
             int choice = Integer.valueOf(e.getActionCommand());
             int selectedCellRow = selectedCell / 9;
             int selectedCellColumn = selectedCell % 9;
@@ -177,6 +206,9 @@ public class GameWindow extends JFrame {
             gameTablePanel.DrawTablePanel();
             if (game.GameStatus == Sudoku.Status.Win) {
                 JOptionPane.showMessageDialog(rootPane, "You won!");
+                timerPanel.Stop();
+            } else if (game.GameStatus == Sudoku.Status.Fail) {
+                JOptionPane.showMessageDialog(rootPane, "You lost, Try harder!");
                 timerPanel.Stop();
             }
         }
@@ -209,6 +241,22 @@ public class GameWindow extends JFrame {
     private class CellActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             selectedCell = Integer.valueOf(e.getActionCommand());
+            int selectedCellRow = selectedCell / 9;
+            int selectedCellColumn = selectedCell % 9;
+            if (game.Puzzle[selectedCellRow][selectedCellColumn] != 0) {
+                selectedCell = -1;
+            }
+        }
+    }
+
+    private class OneWrongActionListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            game.OneWrong = !game.OneWrong;
+            if (game.OneWrong) {
+                JOptionPane.showMessageDialog(rootPane, "First wrong is the last one.");
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "One wrong mode is off.");
+            }
         }
     }
 
